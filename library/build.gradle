@@ -20,6 +20,10 @@ android {
             res.srcDirs = ['res']
         }
     }
+    dependencies
+            {
+                compile project(":libraries:appstrakt_core:appstrakt_core")
+            }
 }
 
 //apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'

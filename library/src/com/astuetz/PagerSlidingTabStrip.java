@@ -26,6 +26,8 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
@@ -38,27 +40,25 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import com.appstrakt.android.core.view.IBindableListViewItem;
 import com.astuetz.pagerslidingtabstrip.R;
-
 import java.util.Locale;
 
 public class PagerSlidingTabStrip extends HorizontalScrollView {
-
 
     public interface IconTabProvider {
         public int getPageIconResId(int position);
     }
 
-    public interface TextTabProvider {
-        public TextView getTextViewForTitle(final int position, String title);
+    public interface IBindableTabProvider {
+        public View getView(int position);
+
+        @Nullable
+        public Object getModel(int position);
     }
 
     // @formatter:off
-    private static final int[] ATTRS = new int[]{
-            android.R.attr.textSize,
-            android.R.attr.textColor
-    };
+    private static final int[] ATTRS = new int[] {android.R.attr.textSize, android.R.attr.textColor};
     // @formatter:on
 
     private LinearLayout.LayoutParams defaultTabLayoutParams;
@@ -201,9 +201,8 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
             if (pager.getAdapter() instanceof IconTabProvider) {
                 addIconTab(i, ((IconTabProvider) pager.getAdapter()).getPageIconResId(i));
-            }
-            if (pager.getAdapter() instanceof TextTabProvider) {
-                addTab(i, ((TextTabProvider) pager.getAdapter()).getTextViewForTitle(i, pager.getAdapter().getPageTitle(i).toString()), true);
+            } else if (pager.getAdapter() instanceof IBindableTabProvider) {
+                addIBindableTab(((IBindableTabProvider) pager.getAdapter()).getView(i), ((IBindableTabProvider) pager.getAdapter()).getModel(i), i);
             } else {
                 addTextTab(i, pager.getAdapter().getPageTitle(i).toString());
             }
@@ -228,7 +227,6 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
                 scrollToChild(currentPosition, 0);
             }
         });
-
     }
 
     private void addTextTab(final int position, String title) {
@@ -238,7 +236,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         tab.setGravity(Gravity.CENTER);
         tab.setSingleLine();
 
-        addTab(position, tab, false);
+        addTab(position, tab);
     }
 
     private void addIconTab(final int position, int resId) {
@@ -246,11 +244,17 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         ImageButton tab = new ImageButton(getContext());
         tab.setImageResource(resId);
 
-        addTab(position, tab, false);
-
+        addTab(position, tab);
     }
 
-    private void addTab(final int position, View tab, boolean isCustom) {
+    private void addIBindableTab(@NonNull View view, @Nullable Object model, int position) {
+        if (view instanceof IBindableListViewItem && model != null) {
+            ((IBindableListViewItem) view).bind(model, position);
+        }
+        addTab(position, view);
+    }
+
+    private void addTab(final int position, View tab) {
         tab.setFocusable(true);
         tab.setOnClickListener(new OnClickListener() {
             @Override
@@ -258,7 +262,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
                 pager.setCurrentItem(position);
             }
         });
-        tab.setTag(R.id.custom_tab, isCustom);
+
         tab.setPadding(tabPadding, 0, tabPadding, 0);
         tabsContainer.addView(tab, position, shouldExpand ? expandedTabLayoutParams : defaultTabLayoutParams);
     }
@@ -271,7 +275,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
             v.setBackgroundResource(tabBackgroundResId);
 
-            if (v instanceof TextView && (!(Boolean) v.getTag(R.id.custom_tab))) {
+            if (v instanceof TextView) {
 
                 TextView tab = (TextView) v;
                 tab.setTextSize(TypedValue.COMPLEX_UNIT_PX, tabTextSize);
@@ -289,7 +293,6 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
                 }
             }
         }
-
     }
 
     private void scrollToChild(int position, int offset) {
@@ -308,7 +311,6 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
             lastScrollX = newScrollX;
             scrollTo(newScrollX, 0);
         }
-
     }
 
     @Override
@@ -391,7 +393,6 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
                 delegatePageListener.onPageSelected(position);
             }
         }
-
     }
 
     public void setIndicatorColor(int indicatorColor) {
@@ -581,5 +582,4 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
             }
         };
     }
-
 }

@@ -22,7 +22,7 @@ android {
     }
     dependencies
             {
-                compile project(":libraries:appstrakt_core:appstrakt_core")
+                compile project(":libraries:appstrakt:appstrakt_core")
             }
 }
 

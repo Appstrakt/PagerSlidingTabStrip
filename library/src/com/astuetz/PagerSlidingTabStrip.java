@@ -41,6 +41,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.appstrakt.android.core.view.IBindableListViewItem;
+import com.appstrakt.android.core.view.viewpager.AppstraktViewPager;
 import com.astuetz.pagerslidingtabstrip.R;
 import java.util.Locale;
 
@@ -175,14 +176,14 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         }
     }
 
-    public void setViewPager(ViewPager pager) {
+    public void setViewPager(AppstraktViewPager pager) {
         this.pager = pager;
 
         if (pager.getAdapter() == null) {
             throw new IllegalStateException("ViewPager does not have adapter instance.");
         }
 
-        pager.setOnPageChangeListener(pageListener);
+        pager.addOnPageChangeListener(pageListener);
 
         notifyDataSetChanged();
     }

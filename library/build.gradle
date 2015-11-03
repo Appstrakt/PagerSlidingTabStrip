@@ -5,12 +5,12 @@ dependencies {
 }
 
 android {
-    compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
-    buildToolsVersion '19.1.0'
+    compileSdkVersion getBuildSetting('compileSdkVersion')
+    buildToolsVersion getBuildSetting('buildToolsVersion')
 
     defaultConfig {
-        minSdkVersion 8
-        targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_TARGET_SDK_VERSION)
+        minSdkVersion getBuildSetting('minSdkVersion')
+        targetSdkVersion getBuildSetting('targetSdkVersion')
     }
 
     sourceSets {

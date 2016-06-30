@@ -40,8 +40,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.appstrakt.android.core.view.IBindableListViewItem;
-import com.appstrakt.android.core.view.viewpager.AppstraktViewPager;
+import com.appstrakt.android.bindable.view.IBindableListViewItem;
+import com.appstrakt.android.widget.viewpager.AppstraktViewPager;
 import com.astuetz.pagerslidingtabstrip.R;
 import java.util.Locale;
 
